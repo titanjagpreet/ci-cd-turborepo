@@ -1,7 +1,7 @@
-import {client} from "@repo/prisma/client"
+import { prisma } from "@repo/prisma/client"
 
 export default async function HOME() {
-  const user = await client.user.findFirst();
+  const user = await prisma.user.findFirst();
 
 return (
   <div>

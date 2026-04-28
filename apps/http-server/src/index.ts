@@ -1,5 +1,5 @@
 import express from 'express'
-import { client } from "@repo/prisma/client"
+import { prisma } from "@repo/prisma/client"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
 
@@ -20,7 +20,7 @@ app.post('/signup', async (req, res) => {
             return res.status(400).json({ message: "username and password required" });
         }
 
-        const userExists = await client.user.findUnique({
+        const userExists = await prisma.user.findUnique({
             where: { username }
         })
         if (userExists) {
@@ -30,7 +30,7 @@ app.post('/signup', async (req, res) => {
 
         const newPassword = await bcrypt.hash(password, 10);
 
-        const createUser = await client.user.create({
+        const createUser = await prisma.user.create({
             data: {
                 username,
                 password: newPassword
@@ -58,7 +58,7 @@ app.post('/signin', async (req, res) => {
             return res.status(400).json({ message: "username and password required" });
         }
 
-        const userExists = await client.user.findUnique({
+        const userExists = await prisma.user.findUnique({
             where: { username }
         });
         if (!userExists) {
