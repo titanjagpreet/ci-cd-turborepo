@@ -1,0 +1,38 @@
+name: Deploy to production
+
+on:
+  push:
+    branches:
+      - "production"
+
+jobs:
+  redeploy_everything:
+    name: Deploying everything to production cluster
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH into server and deploy
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
+          chmod 600 ~/ssh_key
+          ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@188.166.232.62 << 'EOF'
+            set -e
+
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            export PATH="/usr/local/bin:$HOME/.local/share/pnpm:$PATH"
+
+            # Install pnpm if missing
+            if ! command -v pnpm &> /dev/null; then
+              echo "pnpm not found, installing..."
+              npm install -g pnpm
+              export PATH="/usr/local/bin:$PATH"
+            fi
+
+            cd /root/ci-cd-turborepo
+            git pull origin production
+            pnpm install
+            pnpm run build
+            pm2 restart all
+          EOF
+          rm -f ~/ssh_key
