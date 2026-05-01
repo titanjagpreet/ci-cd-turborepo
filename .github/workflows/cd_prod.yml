@@ -15,7 +15,7 @@ jobs:
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
           chmod 600 ~/ssh_key
-          ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@188.166.232.62 << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@188.166.224.230 << 'EOF'
             set -e
 
             export NVM_DIR="$HOME/.nvm"
